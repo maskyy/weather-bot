@@ -1,0 +1,22 @@
+[tool.poetry]
+name = "weather-bot"
+version = "0.1.0"
+description = "See https://app.weeek.net/ws/484841/document/133"
+authors = ["maskyy <62175286+maskyy@users.noreply.github.com>"]
+license = "The Unlicense"
+readme = "README.md"
+
+[tool.poetry.dependencies]
+python = "^3.12"
+pyTelegramBotAPI = "^4.20.0"
+peewee = "^3.17.5"
+python-dotenv = "^1.0.1"
+aiohttp = "^3.9.5"
+
+[tool.poetry.group.dev.dependencies]
+gray = "^0.15.0"
+pytest = "^8.2.2"
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
