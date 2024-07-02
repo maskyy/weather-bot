@@ -2,14 +2,14 @@ import asyncio
 
 from .bot import run_bot
 from .database import create_tables
-from .logger import logger, setup_logger
+from .logger import log, setup_logger
 
 
 async def main():
     setup_logger()
     create_tables()
 
-    logger.debug("Running...")
+    log.debug("Starting...")
     await run_bot()
 
 
