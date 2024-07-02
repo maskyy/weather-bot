@@ -1,5 +1,5 @@
 [tool.poetry]
-name = "weather-bot"
+name = "bot"
 version = "0.1.0"
 description = "See https://app.weeek.net/ws/484841/document/133"
 authors = ["maskyy <62175286+maskyy@users.noreply.github.com>"]
