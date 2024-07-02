@@ -1,18 +1,18 @@
-from urllib.parse import urlencode
 from json import dumps
 from typing import Any
+from urllib.parse import urlencode
 
 from aiohttp import ClientSession
 from limiter import Limiter
 
 from .config import CONFIG
-from .const import FETCH_RATE
+from .const import FETCH_CAPACITY, FETCH_RATE
 from .logger import logger
 
 
 BASE_URL = "https://api.openweathermap.org"
 
-_limiter = Limiter(rate=4, capacity=4)
+_limiter = Limiter(rate=FETCH_RATE, capacity=FETCH_CAPACITY)
 
 
 def _dumps(obj) -> str:
@@ -24,7 +24,6 @@ def build_request(path: str, **kwargs) -> str:
     return f"{BASE_URL}/{path}?{urlencode(kwargs)}"
 
 
-from datetime import datetime
 @_limiter
 async def fetch(path: str, session: ClientSession, **kwargs) -> (int, Any):
     url = build_request(path, **kwargs)
