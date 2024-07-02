@@ -38,7 +38,7 @@ async def help(msg: Message):
 
 def parse_weather_response(location: str, data: dict) -> str:
     if "error" in data:
-        return f"Ошибка: {data["error"]}"
+        return f"Ошибка: {data['error']}"
     template = "Город: {name}\nТемпература: {temp} °C\nСкорость ветра: {wind} м/с\n"
 
     return template.format(**data)
