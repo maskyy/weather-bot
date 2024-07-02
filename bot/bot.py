@@ -6,7 +6,7 @@ from telebot.types import Message
 
 from .api import get_current_weather
 from .config import CONFIG
-from .const import LOCATION_SEPARATOR, MAX_LOCATIONS_PER_MESSAGE
+from .const import HELP_TEXT, LOCATION_SEPARATOR, MAX_LOCATIONS_PER_MESSAGE
 from .database import add_record
 from .logger import log
 
@@ -33,8 +33,7 @@ async def _reply_to(msg: Message, text: str) -> Message:
 
 @bot.message_handler(commands=["start", "help"])
 async def help(msg: Message):
-    text = "Hello World"
-    await _reply_to(msg, text)
+    await _reply_to(msg, HELP_TEXT)
 
 
 def parse_weather_response(location: str, data: dict) -> str:
