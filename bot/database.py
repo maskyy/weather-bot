@@ -8,7 +8,14 @@ from .config import CONFIG
 from .logger import log
 
 
-db = PostgresqlExtDatabase(CONFIG["DB_URI"])
+
+db = PostgresqlExtDatabase(
+    CONFIG["POSTGRES_DB"],
+    user=CONFIG["POSTGRES_USER"],
+    password=CONFIG["POSTGRES_PASSWORD"],
+    host=CONFIG["POSTGRES_HOST"],
+    port=CONFIG["POSTGRES_PORT"],
+)
 
 
 class Record(Model):
@@ -25,13 +32,11 @@ class Record(Model):
         table_name = "records"
 
 
-
-
 def create_tables():
     try:
         db.connect()
     except Exception as e:
-        log.debug("Failed to connect to DB: %s %s", type(e), e)
+        log.critical("Failed to connect to DB: %s %s", type(e), e)
         sys.exit(1)
     db.create_tables([Record])
 

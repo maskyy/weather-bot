@@ -77,5 +77,5 @@ async def run_bot():
         await bot.polling(non_stop=True, allowed_updates=["message"])
     # Log fatal exceptions (invalid token, no network on start)
     except Exception as e:
-        log.fatal("Cannot run bot: %s", e)
+        log.critical("Cannot run bot: %s", e)
     await bot.close_session()

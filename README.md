@@ -63,4 +63,4 @@ Telegram-бот для получения текущей температуры 
   - `BOT_TOKEN` - токен бота
   - `POSTGRES_{USER,PASSWORD,HOST,PORT,DB}` - подключение к БД
   - `WEATHER_API_TOKEN` - API-токен OpenWeatherMap
-2. Из окружения выполнить команду `./run.sh` либо `python -m bot`. Либо запустить `docker-compose up`
+2. Из окружения выполнить команду `./run.sh` либо `python -m bot`. Либо запустить `docker-compose up` (пока не работает)
