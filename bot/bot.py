@@ -1,12 +1,13 @@
+import asyncio
 from textwrap import dedent
 
 from aiohttp import ClientSession
 from telebot.async_telebot import AsyncTeleBot
 from telebot.types import Message
 
-from .api import get_weather
+from .api import get_current_weather
 from .config import CONFIG
-
+from .const import MAX_LOCATIONS_PER_MESSAGE
 
 bot = AsyncTeleBot(CONFIG["BOT_TOKEN"])
 
@@ -17,22 +18,41 @@ async def help(msg: Message):
     await bot.reply_to(msg, text)
 
 
-@bot.message_handler(func=lambda _: True)
-async def print_weather(msg: Message):
-    locations = msg.text.split(",")
+def parse_weather_response(location: str, data: dict) -> str:
+    if "error" in data:
+        return f"Ошибка: {data["error"]}"
     template = dedent(
         """
         Город: {name}
         Температура: {temp} °C
-        Скорость ветра: {wind} м/с
-        """
+        Скорость ветра: {wind} м/с"""
     )
+    return template.format(**data)
 
-    output = []
+
+async def get_weather_task(location: str, session: ClientSession) -> str:
+    data = await get_current_weather(location, session)
+    return parse_weather_response(location, data)
+
+
+@bot.message_handler(func=lambda _: True)
+async def print_weather(msg: Message):
+    locations = msg.text.split(",", maxsplit=MAX_LOCATIONS_PER_MESSAGE)
+
+    if len(locations) > MAX_LOCATIONS_PER_MESSAGE:
+        await bot.reply_to(
+            msg,
+            f"Пожалуйста, укажите не более {MAX_LOCATIONS_PER_MESSAGE} городов",
+        )
+        return
+
+    locations = [l.strip() for l in locations]
+    locations = list(filter(len, locations))
+
+    responses = []
     async with ClientSession() as s:
-        for l in locations:
-            data = await get_weather(l, s)
-            output.append(template.format(**data))
+        tasks = [asyncio.create_task(get_weather_task(l, s)) for l in locations]
+        output = await asyncio.gather(*tasks)
 
     await bot.reply_to(msg, "\n".join(output))
 
