@@ -1,22 +1,11 @@
 services:
-  postgres:
-    image: "postgres:alpine"
-    ports:
-      - 15432:5432
+  database:
+    build: ./database
     env_file:
       - .env
-    networks:
-      - postgres-network
-
+    network_mode: bridge
   bot:
     build: .
     env_file:
       - .env
-    networks:
-      - postgres-network
-    depends_on:
-      - postgres
-
-networks:
-  postgres-network:
-    driver: bridge
+    network_mode: "service:database"

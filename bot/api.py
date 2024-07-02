@@ -45,8 +45,6 @@ async def fetch(
         except Exception as e:
             log.info("Exception happened: %s %s", type(e), e)
             exc = str(e)
-    
-    seconds = MAX_RETRIES * REQUEST_TIMEOUT
     return 0, {"message": f"сервис погоды недоступен: {exc}"}
 
 
