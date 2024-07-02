@@ -1,3 +1,5 @@
+LOCATION_SEPARATOR = ";"
+
 # Maximum locations allowed in a request
 MAX_LOCATIONS_PER_MESSAGE = 10
 

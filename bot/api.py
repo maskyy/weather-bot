@@ -7,7 +7,7 @@ from limiter import Limiter
 
 from .config import CONFIG
 from .const import FETCH_CAPACITY, FETCH_RATE
-from .logger import logger
+from .logger import log
 
 
 BASE_URL = "https://api.openweathermap.org"
@@ -27,7 +27,7 @@ def build_request(path: str, **kwargs) -> str:
 @_limiter
 async def fetch(path: str, session: ClientSession, **kwargs) -> (int, Any):
     url = build_request(path, **kwargs)
-    logger.debug("GET %s", url)
+    log.debug("GET %s", url)
 
     async with session.get(url) as response:
         status = response.status
@@ -45,14 +45,13 @@ async def get_coordinates(location: str, session: ClientSession) -> dict:
         limit=1,
     )
     if status != 200:
-        logger.info("get_coordinates(%s) error: %s", location, _dumps(data))
+        log.info("get_coordinates(%s) error: %s", location, _dumps(data))
         return {"error": f"место {location}: {data["error"]}"}
 
     if len(data) == 0:
         return {"error": f"место {location} не найдено"}
 
     r = data[0]
-    logger.debug("%s %s", location, _dumps(r))
     ru_name = ""
     if "local_names" in r and "ru" in r["local_names"]:
         ru_name = f" ({r["local_names"]["ru"]})"
@@ -64,7 +63,7 @@ async def get_coordinates(location: str, session: ClientSession) -> dict:
 
 
 async def get_current_weather(location: str, session: ClientSession) -> dict:
-    """Returns the location's name, its current temperature and wind"""
+    """Returns the location's name, current temperature and wind speed"""
 
     city = await get_coordinates(location, session)
     if "error" in city:
@@ -78,7 +77,7 @@ async def get_current_weather(location: str, session: ClientSession) -> dict:
         units="metric",
     )
     if status != 200:
-        logger.info("get_current_weather error: %s", _dumps(data))
+        log.info("get_current_weather error: %s", _dumps(data))
         return {"error": f"получение погоды: {data["error"]}"}
 
     temp = "?"
