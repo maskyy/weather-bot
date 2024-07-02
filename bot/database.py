@@ -1,3 +1,4 @@
+import sys
 from datetime import datetime
 
 from peewee import BigIntegerField, IdentityField, Model, TextField
@@ -24,10 +25,14 @@ class Record(Model):
         table_name = "records"
 
 
-db.connect()
 
 
 def create_tables():
+    try:
+        db.connect()
+    except Exception as e:
+        log.debug("Failed to connect to DB: %s %s", type(e), e)
+        sys.exit(1)
     db.create_tables([Record])
 
 
