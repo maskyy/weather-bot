@@ -1,6 +1,6 @@
 services:
   database:
-    build: ./database
+    image: "postgres:latest"
     env_file:
       - .env
     network_mode: bridge
