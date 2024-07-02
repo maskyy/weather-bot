@@ -11,3 +11,9 @@ FETCH_RATE = 4
 
 # Maximum requests made at once (bucket capacity)
 FETCH_CAPACITY = 10
+
+# Max attempts to request the weather API
+MAX_RETRIES = 5
+
+# Weather API request timeout
+REQUEST_TIMEOUT = 10

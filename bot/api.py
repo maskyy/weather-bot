@@ -6,7 +6,7 @@ from aiohttp import ClientSession
 from limiter import Limiter
 
 from .config import CONFIG
-from .const import FETCH_CAPACITY, FETCH_RATE
+from .const import FETCH_CAPACITY, FETCH_RATE, MAX_RETRIES, REQUEST_TIMEOUT
 from .logger import log
 
 
@@ -25,14 +25,29 @@ def build_request(path: str, **kwargs) -> str:
 
 
 @_limiter
-async def fetch(path: str, session: ClientSession, **kwargs) -> (int, Any):
+async def fetch(
+    path: str,
+    session: ClientSession,
+    retries: int = MAX_RETRIES,
+    **kwargs,
+) -> (int, Any):
     url = build_request(path, **kwargs)
     log.debug("GET %s", url)
 
-    async with session.get(url) as response:
-        status = response.status
-        data = await response.json()
-        return status, data
+    exc = ""
+    for i in range(retries):
+        log.debug("Attempt %s", i + 1)
+        try:
+            async with session.get(url, timeout=REQUEST_TIMEOUT) as response:
+                status = response.status
+                data = await response.json()
+                return status, data
+        except Exception as e:
+            log.info("Exception happened: %s %s", type(e), e)
+            exc = str(e)
+    
+    seconds = MAX_RETRIES * REQUEST_TIMEOUT
+    return 0, {"message": f"сервис погоды недоступен: {exc}"}
 
 
 async def get_coordinates(location: str, session: ClientSession) -> dict:
