@@ -46,7 +46,7 @@ async def get_coordinates(location: str, session: ClientSession) -> dict:
     )
     if status != 200:
         log.info("get_coordinates(%s) error: %s", location, _dumps(data))
-        return {"error": f"место {location}: {data["error"]}"}
+        return {"error": f"место {location}: {data["message"]}"}
 
     if len(data) == 0:
         return {"error": f"место {location} не найдено"}
@@ -78,7 +78,7 @@ async def get_current_weather(location: str, session: ClientSession) -> dict:
     )
     if status != 200:
         log.info("get_current_weather error: %s", _dumps(data))
-        return {"error": f"получение погоды: {data["error"]}"}
+        return {"error": f"получение погоды: {data["message"]}"}
 
     temp = "?"
     if data.get("main", {}).get("temp", None) is not None:
