@@ -1,12 +1,22 @@
 from urllib.parse import urlencode
+from json import dumps
+from typing import Any
 
-import aiohttp
+from aiohttp import ClientSession
+from limiter import Limiter
 
 from .config import CONFIG
+from .const import FETCH_RATE
 from .logger import logger
 
 
 BASE_URL = "https://api.openweathermap.org"
+
+_limiter = Limiter(rate=4, capacity=4)
+
+
+def _dumps(obj) -> str:
+    return dumps(obj, ensure_ascii=False)
 
 
 def build_request(path: str, **kwargs) -> str:
@@ -14,14 +24,19 @@ def build_request(path: str, **kwargs) -> str:
     return f"{BASE_URL}/{path}?{urlencode(kwargs)}"
 
 
-async def fetch(path: str, session: aiohttp.ClientSession, **kwargs):
-    async with session.get(build_request(path, **kwargs)) as response:
+from datetime import datetime
+@_limiter
+async def fetch(path: str, session: ClientSession, **kwargs) -> (int, Any):
+    url = build_request(path, **kwargs)
+    logger.debug("GET %s", url)
+
+    async with session.get(url) as response:
         status = response.status
         data = await response.json()
         return status, data
 
 
-async def get_coordinates(location: str, session: aiohttp.ClientSession) -> dict:
+async def get_coordinates(location: str, session: ClientSession) -> dict:
     """Returns the location's name, latitude and longtitude"""
 
     status, data = await fetch(
@@ -31,24 +46,31 @@ async def get_coordinates(location: str, session: aiohttp.ClientSession) -> dict
         limit=1,
     )
     if status != 200:
-        logger.info("get_coordinates error: %s", data)
-        return f"Ошибка: {data}"
+        logger.info("get_coordinates(%s) error: %s", location, _dumps(data))
+        return {"error": f"место {location}: {data["error"]}"}
 
     if len(data) == 0:
-        return f"Место {location} не найдено!"
+        return {"error": f"место {location} не найдено"}
 
-    entry = data[0]
+    r = data[0]
+    logger.debug("%s %s", location, _dumps(r))
+    ru_name = ""
+    if "local_names" in r and "ru" in r["local_names"]:
+        ru_name = f" ({r["local_names"]["ru"]})"
     return {
-        "name": f"{entry["name"]}, {entry["country"]}",
-        "lat": entry["lat"],
-        "lon": entry["lon"],
+        "name": f"{r["name"]}, {r["country"]}{ru_name}",
+        "lat": r["lat"],
+        "lon": r["lon"],
     }
 
 
-async def get_weather(location: str, session: aiohttp.ClientSession) -> str:
+async def get_current_weather(location: str, session: ClientSession) -> dict:
     """Returns the location's name, its current temperature and wind"""
 
     city = await get_coordinates(location, session)
+    if "error" in city:
+        return {"error": city["error"]}
+
     name = city.pop("name")
     status, data = await fetch(
         "data/2.5/weather",
@@ -56,9 +78,20 @@ async def get_weather(location: str, session: aiohttp.ClientSession) -> str:
         **city,
         units="metric",
     )
+    if status != 200:
+        logger.info("get_current_weather error: %s", _dumps(data))
+        return {"error": f"получение погоды: {data["error"]}"}
+
+    temp = "?"
+    if data.get("main", {}).get("temp", None) is not None:
+        temp = data["main"]["temp"]
+
+    wind = "?"
+    if data.get("wind", {}).get("speed", None) is not None:
+        wind = data["wind"]["speed"]
 
     return {
         "name": name,
-        "temp": data["main"]["temp"],
-        "wind": data["wind"]["speed"],
+        "temp": temp,
+        "wind": wind,
     }
