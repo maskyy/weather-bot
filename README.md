@@ -70,16 +70,22 @@ Telegram-бот для получения текущей температуры 
 4. Получение погоды: ... - ошибки в получении погоды
 5. Пожалуйста, укажите не более N городов
 
-## Установка
+## Установка и запуск
+Локальный запуск:
 1. Установить сервер PostgreSQL (или поднять на Docker)
 2. Установить poetry: `pip install poetry`
 3. Зайти в папку проекта и активировать окружение: `poetry shell`
 4. Установить зависимости: `poetry install --only main`
-
-## Запуск
-1. Указать переменные в .env:
+5. Указать переменные в .env:
   - `LOG_LEVEL` - уровень логирования (DEBUG, INFO, WARNING, ERROR, CRITICAL)
   - `BOT_TOKEN` - токен бота
   - `POSTGRES_{USER,PASSWORD,HOST,PORT,DB}` - подключение к БД
   - `WEATHER_API_TOKEN` - API-токен OpenWeatherMap
-2. Из окружения выполнить команду `./run.sh` либо `python -m bot`. Либо запустить `docker-compose up` (пока не работает)
+6. Из окружения выполнить команду `./run.sh` либо `python -m bot`. Либо запустить `docker-compose up` (пока не работает)
+
+Запуск с docker-compose:
+1. Указать переменные в .env. Далее `POSTGRES_HOST = host`
+2. Запустить БД: `docker-compose run --name host database`
+3. Запустить бота: `docker-compose run bot ./run.sh`
+
+`docker-compose up` может не сработать, т.к. бот по неясной причине не зарезолвит хост БД.
