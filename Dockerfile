@@ -3,4 +3,4 @@ WORKDIR /bot
 COPY pyproject.toml poetry.lock ./
 RUN poetry install
 COPY . ./
-RUN python -m bot
+RUN ./run.sh

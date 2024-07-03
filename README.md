@@ -85,7 +85,9 @@ Telegram-бот для получения текущей температуры 
 
 Запуск с docker-compose:
 1. Указать переменные в .env. Далее `POSTGRES_HOST = host`
+2. `docker-compose up`
+
+Если не работает резолвинг:
+1. Установить `POSTGRES_HOST = host` (или другое имя)
 2. Запустить БД: `docker-compose run --name host database`
 3. Запустить бота: `docker-compose run bot ./run.sh`
-
-`docker-compose up` может не сработать, т.к. бот по неясной причине не зарезолвит хост БД.
