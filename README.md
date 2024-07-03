@@ -81,10 +81,10 @@ Telegram-бот для получения текущей температуры 
   - `BOT_TOKEN` - токен бота
   - `POSTGRES_{USER,PASSWORD,HOST,PORT,DB}` - подключение к БД
   - `WEATHER_API_TOKEN` - API-токен OpenWeatherMap
-6. Из окружения выполнить команду `./run.sh` либо `python -m bot`. Либо запустить `docker-compose up` (пока не работает)
+6. Из окружения выполнить команду `./run.sh` либо `python -m bot`
 
 Запуск с docker-compose:
-1. Указать переменные в .env. Далее `POSTGRES_HOST = host`
+1. Указать переменные в .env
 2. `docker-compose up`
 
 Если не работает резолвинг:
