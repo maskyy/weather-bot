@@ -3,9 +3,7 @@ services:
     image: "postgres:latest"
     env_file:
       - .env
-    network_mode: bridge
   bot:
     build: .
     env_file:
       - .env
-    network_mode: "service:database"
