@@ -7,7 +7,6 @@ from playhouse.postgres_ext import DateTimeTZField, PostgresqlExtDatabase
 from .config import CONFIG
 from .logger import log
 
-
 db = PostgresqlExtDatabase(
     CONFIG["POSTGRES_DB"],
     user=CONFIG["POSTGRES_USER"],

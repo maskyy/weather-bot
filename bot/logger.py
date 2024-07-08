@@ -2,7 +2,6 @@ import logging
 
 from .config import CONFIG
 
-
 log = logging.getLogger("bot")
 
 
