@@ -9,7 +9,6 @@ from .config import CONFIG
 from .const import FETCH_CAPACITY, FETCH_RATE, MAX_RETRIES, REQUEST_TIMEOUT
 from .logger import log
 
-
 BASE_URL = "https://api.openweathermap.org"
 
 _limiter = Limiter(rate=FETCH_RATE, capacity=FETCH_CAPACITY)

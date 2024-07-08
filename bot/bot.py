@@ -10,7 +10,6 @@ from .const import HELP_TEXT, LOCATION_SEPARATOR, MAX_LOCATIONS_PER_MESSAGE
 from .database import add_record
 from .logger import log
 
-
 bot = AsyncTeleBot(CONFIG["BOT_TOKEN"])
 
 
@@ -18,7 +17,7 @@ async def _reply_to(msg: Message, text: str) -> Message:
     from_id = None if msg.from_user is None else msg.from_user.id
     chat_id = None if msg.sender_chat is None else msg.sender_chat.id
 
-    insert_id = add_record(
+    add_record(
         msg.message_id,
         from_id,
         chat_id,
@@ -54,17 +53,14 @@ async def print_weather(msg: Message):
     locations = msg.text.split(LOCATION_SEPARATOR, maxsplit=MAX_LOCATIONS_PER_MESSAGE)
 
     if len(locations) > MAX_LOCATIONS_PER_MESSAGE:
-        await _reply_to(
-            msg,
-            f"Пожалуйста, укажите не более {MAX_LOCATIONS_PER_MESSAGE} городов",
-        )
+        await _reply_to(msg, f"Пожалуйста, укажите не более {MAX_LOCATIONS_PER_MESSAGE} городов")
         return
 
-    locations = [l.strip() for l in locations]
+    locations = [loc.strip() for loc in locations]
     locations = list(filter(len, locations))
 
     async with ClientSession() as s:
-        tasks = [asyncio.create_task(get_weather_task(l, s)) for l in locations]
+        tasks = [asyncio.create_task(get_weather_task(loc, s)) for loc in locations]
         output = await asyncio.gather(*tasks)
 
     await _reply_to(msg, "\n".join(output))
