@@ -66,7 +66,6 @@ async def print_weather(msg: Message):
     await _reply_to(msg, "\n".join(output))
 
 
-@bot.message_handler()
 async def run_bot():
     try:
         await bot.polling(non_stop=True, allowed_updates=["message"])
